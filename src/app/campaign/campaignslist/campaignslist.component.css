@@ -1,0 +1,8 @@
+.no_icon::before
+{
+	display: none !important;
+}
+ul.stepper span
+{
+	cursor: pointer;
+}

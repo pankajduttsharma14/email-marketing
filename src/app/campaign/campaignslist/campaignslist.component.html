@@ -1,0 +1,182 @@
+<app-Loader *ngIf="Loader"></app-Loader>
+<div class="row">
+  <!-- column -->
+  <div class="col-lg-12">
+    <div class="card">
+      <div class="card-body">
+        <h4 class="card-title">Campaign List</h4>
+        <!-- <h5 class="card-subtitle">This is the filerable Data table</h5> -->
+        <div class="row m-b-20">
+          <div class="col-md-6">
+            <form class="w-75">
+              <input type='text' class="form-control" placeholder='Type to filter the name column...' (keyup)='updateFilter($event)' />
+            </form>
+          </div>
+          <div class="create_btn text-right col-md-6">
+            <button class="btn btn-info waves-effect waves-light" type="button" (click)="ToggleObjective()">
+              <span class="btn-label"><i class="fa fa-envelope-o"></i></span>Create Campaign
+            </button>
+          </div>
+        </div>
+        <swal #saveSwal></swal>
+        <div class="table-responsive">
+          <ngx-datatable #table class='material' [columns]="columns" [columnMode]="'force'" [headerHeight]="50" [footerHeight]="50" [rowHeight]="'auto'" [limit]="10" [rows]='rows'>
+            <ngx-datatable-column name="Name" sortable="false" prop="name">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <span>{{row.name}}</span>
+              </ng-template>
+            </ngx-datatable-column>
+            <!--  <ngx-datatable-column name="Discription" sortable="false" prop="discription">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <span>{{row.discription}}</span>
+              </ng-template>
+            </ngx-datatable-column> -->
+            <ngx-datatable-column name="Status" sortable="false" prop="status">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <span class="label" [ngClass]="{'label-warning':row.status=='Draft','label-info':row.status=='Active','label-success':row.status=='Completed','label-danger':row.status=='Scheduled'}">{{row.status}}</span>
+              </ng-template>
+            </ngx-datatable-column>
+            <ngx-datatable-column name="Options" sortable="false" prop="campaign_id">
+              <ng-template let-row="row" let-value="value" ngx-datatable-cell-template>
+                <span mdi-edit class="icon_mat" (click)="EditCampaign(value)" *ngIf="row.status!='Completed'">
+                  <i class="mdi mdi mdi-pencil"></i>
+                </span>
+                <span mdi-delete (click)="showAlert(value)" class="icon_mat">
+                  <i class="mdi mdi-delete"></i>
+
+                </span>
+                <!-- <span mdi-delete (click)="blockAgents(value)" class="icon_mat">
+                  <i class="mdi mdi-email"></i>
+                </span> -->
+              </ng-template>
+            </ngx-datatable-column>
+          </ngx-datatable>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+<div class="objective_popup" [ngClass]="{'ObjectiveBoxShow':ObjectiveBoxShow==true}">
+  <div class="">
+    <div class="card">
+      <ul class="stepper">
+        <li class="pull-left cross_icon" (click)="ToggleObjective()" *ngIf="Step==1">
+          <svg id="ember5788" viewBox="0 -1 18 18" height="18" width="18" class="svg-icon svg-icon-close-x svg-icon--theme-color-medium svg-icon-close-x--large ember-view">
+            <!---->
+            <g stroke="#70767C" stroke-width="2" fill="none" fill-rule="evenodd" class="svg-icon__stroke">
+              <path d="M17 0L1 16M1 0l16 16"></path>
+            </g>
+          </svg>
+        </li>
+        <li class="pull-left back_icon" *ngIf="Step>1" (click)="StepsDecrement();">
+          <i class="mdi mdi-arrow-left"></i>
+        </li>
+        <li [ngClass]="{'active':Step>=1, 'current':Step==1}"><span>OBJECTIVE</span></li>
+        <li [ngClass]="{'active':Step>=2, 'current':Step==2}"><span>DESIGN</span></li>
+        <!-- <li [ngClass]="{'active':Step>=3}"><span>Sender</span></li> -->
+        <li [ngClass]="{'active':Step>=3, 'current':Step==3}"><span>AUDIENCE</span></li>
+        <li [ngClass]="{'active':Step==4, 'current':Step==4}" class="no_icon"><span>Review & Send</span></li>
+        <li class="pull-right">
+          <button class="btn btn-info waves-effect waves-light" type="button" (click)="StepsIncrement();" *ngIf="Step==1">
+            <span class="btn-label"><i class="fa fa-angle-double-right"></i></span>Next
+          </button>
+          <button class="btn btn-info waves-effect waves-light" type="button" (click)="ReviewSend();" *ngIf="Step==2">
+            <span class="btn-label"><i class="fa fa-angle-double-right"></i></span>Next
+          </button>
+        </li>
+      </ul>
+    </div>
+  </div>
+  <!-- Step 1 -->
+  <div class="container" *ngIf="Step==1">
+    <div class="row">
+      <div class="col-md-4">
+        <div class="Compaign_type">
+          <h3>Select a Campaign Type</h3>
+          <small>Automated Campaigns</small>
+        </div>
+        <div class="campaigntype_list">
+          <ul>
+            <li (click)="SelectTemplate(1);" [ngClass]="{'active':TemplateType=='1'}"><i class="fa fa fa-bullhorn"></i> Welcome new customers</li>
+            <li (click)="SelectTemplate(2);" [ngClass]="{'active':TemplateType=='2'}"><i class="fa fa-pagelines"></i> Bring back lapsed Customer Campaign</li>
+            <li (click)="SelectTemplate(3);" [ngClass]="{'active':TemplateType=='3'}"><i class="fa fa-envelope"></i> Other Custom Campaign</li>
+          </ul>
+        </div>
+      </div>
+      <div class="col-md-8">
+        <div class="Preview_heding">
+        </div>
+        <div class="template_heading">
+          <h3>{{TemplateHeading}}</h3>
+          <p>{{TemplateText}}</p>
+        </div>
+        <div class="Template_preview" [innerHTML]="TemplateHTML">
+        </div>
+      </div>
+    </div>
+  </div>
+  <!-- Step 1 -->
+  <!--step 2-->
+  <div class="container-fluid" *ngIf="Step==2">
+    <app-designcampaign></app-designcampaign>
+  </div>
+  <!--step 2-->
+  <!--step 3-->
+  <div class="container" *ngIf="Step==3">
+    <div class="review_send">
+      <div class="row">
+        <div class="col-md-6">
+          <div class="Re_Content">
+            <h2>Who do you want to reach?</h2>
+            <h3>Email</h3>
+            <p>Filter which customers you send this campaign to by using groups and locations, otherwise this campaign will be sent to all reachable customers.</p>
+            <div class="email_options">
+                <ul>
+                  <li (click)="SelectedEmailOption(1);" [ngClass]="{'activeOptions':SelectedOptionValue==1}">
+                    <h3>All Customers</h3>
+                    <p>Send to all reachable customers</p>
+                  </li> 
+                  <li (click)="SelectedEmailOption(2);" [ngClass]="{'activeOptions':SelectedOptionValue==2}">
+                    <h3>Custom</h3>
+                    <p>Send to a subset of reachable customers</p>
+                  </li>
+                </ul>
+            </div>
+            <div class="form-group" *ngIf="SelectedOptionValue==2">
+              <label>Enter customer email to send an email.</label>
+              <div class="input-group mb-3">
+                <div class="input-group-prepend">
+                  <span class="input-group-text" id="basic-addon1"><i class="fa fa-envelope"></i></span>
+                </div>
+                <input type="text" class="form-control" placeholder="Email" [(ngModel)]="MailTo">
+              </div>
+              <div class="input-group">
+                <button class="btn btn-info waves-effect waves-light" type="button" (click)="SendMail();">
+                  <span class="btn-label"><i class="fa fa-paper-plane"></i></span>Send Email
+                </button>
+              </div>
+            </div>
+            <div class="form-group" *ngIf="SelectedOptionValue==1">
+                <h3>Coming Soon...</h3>
+            </div>
+          </div>
+        </div>
+        <div class="col-md-6">
+            <div class="mobile_frame">
+              <div class="preview_mail">
+                <span class="">
+                  Send yourself a preview of your email.<br>
+                  <a href="javascript:void(0)" (click)="SendToSelf($event);">andy@addmi.com</a>
+                </span>
+              </div>
+                <div class="scroll_box">
+                  <div class="Template_preview" [innerHTML]="FinalEmailer" id="mobile_temp"></div>
+                </div>
+            </div>
+            
+        </div>
+      </div>
+    </div>
+  </div>
+  <!--step 3-->
+</div>

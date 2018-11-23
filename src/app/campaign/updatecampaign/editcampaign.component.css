@@ -1,0 +1,73 @@
+@import "~primeng/resources/themes/nova-light/theme.css";
+@import "~primeng/resources/primeng.min.css";
+@import "~primeicons/primeicons.css";
+
+ul.stepper {
+    padding: 0 15px;
+    list-style: none;
+    text-align: center;
+}
+ul.stepper li
+{
+
+}
+ul.stepper li {
+    display: inline-block;
+    width: 24%;
+}
+
+span.circle_icon {
+    height: 40px;
+    width: 40px;
+    display: inline-block;
+    border: 4px solid #efefef;
+    border-radius: 50%;
+    line-height: 31px;
+    font-size: 20px;
+    margin-top: 20px;
+    margin-bottom: 10px;
+}
+.stepper .active span.circle_icon
+{
+  background: #007bff !important;
+  /*border: 4px solid #007bff;*/
+  color: #fff;
+}
+
+.stepper .active span:not(.circle_icon)
+{
+  color: #007bff !important;
+  font-weight: 400;
+}
+
+.template_thumbs li {
+  display: inline-block;
+width: 150px;
+text-align: center;
+list-style: none;
+padding: 10px;
+  }
+  .template_thumbs
+  {
+    padding: 0px;
+  }
+  .template_thumbs li img {
+    height: 150px;
+    margin-bottom: 10px;}
+
+    .template_thumbs li.selected {
+    border: 2px solid #007bff;
+    padding: 10px;
+    box-shadow: 5px 1px 7px rgba(0,0,0,0.3);
+}
+
+
+
+.ui-calendar
+{
+  width: 100% !important;
+}
+.ui-inputtext {
+    height: 40px;
+    width: 100%;
+}

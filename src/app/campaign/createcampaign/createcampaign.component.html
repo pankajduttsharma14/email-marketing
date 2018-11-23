@@ -1,0 +1,104 @@
+<div class="row">
+  <!-- column -->
+  
+  <div class="col-md-12">
+    <div class="card">
+      <!-- step 1 -->
+      <div class="card-body">
+        <h4 class="card-title">Create Campaign</h4>
+        <div *ngIf="(StatusMsg | json)!='{}'">
+          <div [ngClass]="{'alert-danger':StatusMsg.type=='ERROR','alert-success':StatusMsg.type=='SUCCESS'}" class="alert">
+            <span class="demo-google-material-icon" *ngIf="StatusMsg.type=='SUCCESS'"> <i class="material-icons">check</i></span>
+            <span class="demo-google-material-icon" *ngIf="StatusMsg.type=='ERROR'"> <i class="material-icons">close</i></span> {{StatusMsg.msg}}</div>
+        </div>
+        <form [formGroup]="AddCampaign">
+          <div class="row">
+            <div class="col-12">
+              <div class="form-group">
+                <label>Campaign Name</label>
+                <input type="text" class="form-control" formControlName="cmp_name">
+                <div *ngIf="AddCampaign.controls['cmp_name'].touched && !AddCampaign.controls['cmp_name'].valid" class="has-danger">
+                  <small _ngcontent-c3="" class="form-control-feedback"> This field is required. </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label>Status</label>
+                <select class="custom-select" formControlName="cmp_status" (change)="StatusUpdate($event)">
+                  <option [selected]="true" value="">Status</option>
+                  <option value="Active">Active</option>
+                  <option value="Draft">Draft</option>
+                  <option value="Scheduled">Scheduled</option>
+                  <option value="Completed">Completed</option>
+                </select>
+                <div *ngIf="AddCampaign.controls['cmp_status'].touched && !AddCampaign.controls['cmp_status'].valid" class="has-danger">
+                  <small _ngcontent-c3="" class="form-control-feedback"> This field is required. </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12" *ngIf="status=='Scheduled'">
+              <div class="form-group">
+                <label>Start Start</label>
+                <!-- <input type="date" class="form-control" formControlName="cmp_start_date"> -->
+                <div class="input-group">
+                  <input class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #d1="ngbDatepicker" formControlName="cmp_start_date">
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calendar" (click)="d1.toggle()" type="button"><i class="mdi mdi-calendar"></i></button>
+                  </div>
+                </div>
+                <div *ngIf="AddCampaign.controls['cmp_start_date'].touched && !AddCampaign.controls['cmp_start_date'].valid" class="has-danger">
+                  <small _ngcontent-c3="" class="form-control-feedback"> This field is required. </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12" *ngIf="status=='Scheduled'">
+              <div class="form-group">
+                <label>End Date</label>
+                <!-- <input type="date" class="form-control" formControlName="cmp_end_date"> -->
+                <div class="input-group">
+                  <input class="form-control" placeholder="yyyy-mm-dd" name="dp" ngbDatepicker #d="ngbDatepicker" formControlName="cmp_end_date">
+                  <div class="input-group-append">
+                    <button class="btn btn-outline-secondary calendar" (click)="d.toggle()" type="button"><i class="mdi mdi-calendar"></i></button>
+                  </div>
+                </div>
+                <!-- <p-calendar formControlName="cmp_end_date"></p-calendar> -->
+                <div *ngIf="AddCampaign.controls['cmp_end_date'].touched && !AddCampaign.controls['cmp_end_date'].valid" class="has-danger">
+                  <small _ngcontent-c3="" class="form-control-feedback"> This field is required. </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12" *ngIf="status=='Scheduled'">
+              <div class="form-group">
+                <label>Time</label>
+                <ngb-timepicker [(ngModel)]="time" formControlName="time"></ngb-timepicker>
+                <div *ngIf="AddCampaign.controls['time'].touched && !AddCampaign.controls['time'].valid" class="has-danger">
+                  <small _ngcontent-c3="" class="form-control-feedback"> This field is required. </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12">
+              <div class="form-group">
+                <label>Campaign Description</label>
+                <textarea type="text" class="form-control" formControlName="cmp_description"></textarea>
+                <div *ngIf="AddCampaign.controls['cmp_description'].touched && !AddCampaign.controls['cmp_description'].valid" class="has-danger">
+                  <small _ngcontent-c3="" class="form-control-feedback"> This field is required. </small>
+                </div>
+              </div>
+            </div>
+            <div class="col-12 text-left">
+              <div class="form-group">
+                <button class="btn btn-info waves-effect waves-light" type="button" [disabled]="!AddCampaign.valid" (click)="CreateCampaign(AddCampaign.value)">
+                  <span class="btn-label"><i class="fa fa-check"></i></span>Save & Continue
+                </button>
+              </div>
+            </div>
+          </div>
+        </form>
+      </div>
+      <!-- step 1 -->
+     
+    </div>
+  </div>
+  <!-- column -->
+</div>

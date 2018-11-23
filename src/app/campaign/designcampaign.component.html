@@ -1,0 +1,460 @@
+<!-- Dont remove id from template html -->
+<!-- Preview popup -->
+<div class="emailer_preview" [ngClass]="{'ShowHtml':ShowPopup==true}">
+  <h3>Emailer Preview <span class="cross_icon" (click)="HidePreview()"><i class="fa fa-times"></i></span></h3>
+  <div [innerHTML]="FinalEmailer" style="height: 600px; width:800px; overflow-x: hidden; overflow-y: scroll;" *ngIf="ShowPopup"></div>
+</div>
+<!-- Preview popup -->
+<!-- Preview popup -->
+<div class="image_preview" [ngClass]="{'ShowGallery':ShowGallery==true}">
+  <h3>Select Image <span class="cross_icon" (click)="HideImagePopup()"><i class="fa fa-times"></i></span></h3>
+  <div class="tab_box">
+    <ngb-tabset>
+      <ngb-tab title="Upload Image">
+        <ng-template ngbTabContent>
+          <div class="col-md-12 mt-2">
+            <div class="form-group">
+              <label>Choose Image</label>
+              <div class="input-group">
+                <div class="input-group-prepend">
+                  <span class="input-group-text">Upload</span>
+                </div>
+                <div class="custom-file">
+                  <input type="file" class="custom-file-input" id="inputGroupFile01" accept="image/*" [(ngModel)]="Image" (change)="ImageUpload($event
+                  )">
+                  <label class="custom-file-label" for="inputGroupFile01"><span *ngIf="FileName==''">Choose file</span>
+                    <span *ngIf="FileName!=''">{{FileName}}</span>
+                  </label>
+                </div>
+              </div>
+            </div>
+            <div class="form-group">
+              <div class="form-group">
+                <button class="btn btn-info waves-effect waves-light" type="button" (click)="UploadImage()" [disabled]="!Image">
+                  <span class="btn-label"><i class="fa fa-upload"></i></span>Upload Image
+                </button>
+              </div>
+            </div>
+          </div>
+        </ng-template>
+      </ngb-tab>
+      <ngb-tab title="Choose From Gallery">
+        <ng-template ngbTabContent>
+          <div class="image_gallery">
+            <ul>
+              <li *ngFor="let image of GalleryImages" (click)="SelectedImage($event)"><img [src]="image"></li>
+            </ul>
+          </div>
+          <div class="form-group text-left">
+            <button class="btn btn-info waves-effect waves-light ml-4" type="button" [disabled]="SelectedImagePath==null" (click)="SetImageFromGallery()"> <span class="btn-label"><i class="fa fa-check" ></i></span>Set Image</button>
+          </div>
+        </ng-template>
+      </ngb-tab>
+    </ngb-tabset>
+  </div>
+</div>
+<!-- Preview popup -->
+<div class="overlay" *ngIf="ShowOverlay"></div>
+<div class="row">
+  <div class="col-8 set_column">
+    <div class="email_main" style="padding: 20px 0px; margin-bottom: 40px;">
+      <div class="subject_box input-group">
+        <div class="input-group-prepend">
+          Subject:
+        </div>
+        <input type="text" class="form-control" [(ngModel)]="MailSubject">
+      </div>
+      <div class="email_template dragndrop" [dragula]='"third-bag"' style="width: 600px; margin: 0px auto;">
+      </div>
+    </div>
+  </div>
+  <div class="col-4 pull-right">
+    <div class="card">
+      <div class="card-body tabs_box">
+        <h3 class="card-title" *ngIf="DesignHeading">{{DesignHeading}}</h3>
+        <h6 class="card-subtitle">Design your email campaign</h6>
+        <hr>
+        <ngb-tabset *ngIf="!DesignMode">
+          <ngb-tab>
+            <ng-template ngbTabTitle><b>Block</b></ng-template>
+            <hr>
+            <ng-template ngbTabContent>
+              <div class="main_tab blocks mt-2">
+                <ul class="append_box mt-2">
+                  <li (click)="AddElement('text')"><span><i class="mdi mdi-format-text"></i></span>
+                    <br> Text</li>
+                  <li (click)="AddElement('heading')"><span><i class="mdi mdi-format-font"></i></span>
+                    <br> Heading</li>
+                  <li (click)="AddElement('divider')"><span><i class="mdi mdi-window-minimize"></i></span>
+                    <br> Devider</li>
+                  <li (click)="AddElement('button')"><span><i class="mdi mdi-link"></i></span>
+                    <br> Button</li>
+                  <li (click)="AddElement('image')"><span><i class="mdi mdi-image"></i></span>
+                    <br> Image</li>
+                  <li (click)="AddElement('icon')" id="iconTrigger"><span><i class="mdi mdi-share-variant"></i></span>
+                    <br> Social Icons</li>
+                </ul>
+                <div class="select_icon" [ngClass]="{'showIcons':showIcons==true}">
+                  <ul>
+                    <li *ngFor="let icon of SocialArray" (click)="AddSocialIcon(icon.name,icon.path)"><img [src]="icon.path"></li>
+                  </ul>
+                </div>
+              </div>
+              <!-- <div class="save_btn">
+                <button class="btn btn-info btn-block btn_done" type="button" (click)="SavePreviewEmailer()">Save and Preview</button>
+              </div> -->
+            </ng-template>
+          </ngb-tab>
+          <ngb-tab>
+            <ng-template ngbTabTitle><b>Styles</b></ng-template>
+            <ng-template ngbTabContent>
+              <div class="main_tab styles mt-2">
+                <div class="form-group">
+                  <label>Template Background</label>
+                  <input [value]="bg_color" [style.background]="bg_color" [(colorPicker)]="bg_color" [cpPosition]="'bottom'" [cpOutputFormat]="'hex'" class="form-control" (colorPickerChange)="SetTemplateBackground($event)" />
+                </div>
+              </div>
+            </ng-template>
+          </ngb-tab>
+          <!-- <ngb-tab title="Disabled" [disabled]="true">
+                    <ng-template ngbTabContent>
+                      <p class="p-t-20">Raw denim you probably haven't heard of them jean shorts Austin. Nesciunt tofu stumptown aliqua, retro synth
+                      master cleanse. Mustache cliche tempor, williamsburg carles vegan helvetica. Reprehenderit butcher retro keffiyeh
+                      dreamcatcher synth. Cosby sweater eu banh mi, qui irure terry richardson ex squid. Aliquip placeat salvia cillum
+                      iphone. Seitan aliquip quis cardigan american apparel, butcher voluptate nisi qui.</p>
+                    </ng-template>
+                  </ngb-tab> -->
+        </ngb-tabset>
+        <div class="DesignMode" *ngIf="DesignMode">
+          <!-- Text design   -->
+          <div class="design_mode_inner" *ngIf="DesignType=='text' || DesignType=='heading'">
+            <!-- <h3>Text Style</h3>     -->
+            <div class="form-group">
+              <label>Font Style</label>
+              <ul class="font_style">
+                <li><a href="javascript:void(0)" (click)="BoldToggle()"><i class="fa fa-bold"></i></a></li>
+                <li><a href="javascript:void(0)" (click)="ItalicToggle()"><i class="fa fa-italic"></i></a></li>
+              </ul>
+            </div>
+            <div class="form-group">
+              <label>Text Alignment</label>
+              <ul class="align_buttons">
+                <li><a href="javascript:void(0);" (click)="AlignText('left')" title="Left"><i class="mdi mdi-format-align-left"></i></a></li>
+                <li><a href="javascript:void(0);" (click)="AlignText('right')" title="Right"><i class="mdi mdi-format-align-right"></i></a></li>
+                <li><a href="javascript:void(0);" (click)="AlignText('center')" title="Center"><i class="mdi mdi-format-align-center"></i></a></li>
+                <li><a href="javascript:void(0);" (click)="AlignText('justify')" title="Justify"><i class="mdi mdi-format-align-justify"></i></a></li>
+              </ul>
+            </div>
+            <div class="form-group">
+              <label>Font</label>
+              <select class="form-control" [(ngModel)]="fontfamily" (change)="SetTextFont($event)">
+                <option value="" [selected]="true">Font</option>
+                <!-- <option value="sq-market">SQ Market</option> -->
+                <option value="arial">Arial</option>
+                <option value="caveat-brush">Caveat Brush</option>
+                <option value="comic-sans-ms">Comic Sans MS</option>
+                <option value="courier-new">Courier New</option>
+                <option value="dancing-script">Dancing Script</option>
+                <option value="georgia">Georgia</option>
+                <option value="helvetica">Helvetica</option>
+                <option value="lora">Lora</option>
+                <option value="lucida">Lucida</option>
+                <option value="palatino">Palatino</option>
+                <option value="tahoma">Tahoma</option>
+                <option value="times-new-roman">Times New Roman</option>
+                <option value="verdana">Verdana</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Size</label>
+              <select class="form-control" [(ngModel)]="fontsize" (change)="SetTextFontSize($event)">
+                <option value="" [selected]="true">Size</option>
+                <option value="12">12px</option>
+                <option value="14">14px</option>
+                <option value="16">16px</option>
+                <option value="18">18px</option>
+                <option value="24">24px</option>
+                <option value="28">28px</option>
+                <option value="36">36px</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Color</label>
+              <input [value]="textcolor" [style.background]="textcolor" [(colorPicker)]="textcolor" [cpPosition]="'bottom'" [cpOutputFormat]="'hex'" class="form-control" (colorPickerChange)="SetTextFontColor($event)" />
+            </div>
+            <div class="form-group">
+              <label>Top Spacing</label>
+              <select class="form-control" [(ngModel)]="marginTop" (change)="SetTopSpacing($event)">
+                <option value="" [selected]="true">Select Top Spacing</option>
+                <option value="0">0px</option>
+                <option value="5">5px</option>
+                <option value="10">10px</option>
+                <option value="15">15px</option>
+                <option value="20">20px</option>
+                <option value="25">25px</option>
+                <option value="30">30px</option>
+                <option value="40">40px</option>
+                <option value="50">50px</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label>Bottom Spacing</label>
+              <select class="form-control" [(ngModel)]="marginBottom" (change)="SetBottomSpacing($event)">
+                <option value="" [selected]="true">Select Bottom Spacing</option>
+                <option value="0">0px</option>
+                <option value="5">5px</option>
+                <option value="10">10px</option>
+                <option value="15">15px</option>
+                <option value="20">20px</option>
+                <option value="25">25px</option>
+                <option value="30">30px</option>
+                <option value="40">40px</option>
+                <option value="50">50px</option>
+              </select>
+            </div>
+          </div>
+          <!-- Text design   -->
+          <!-- Image Design -->
+          <div class="design_mode_inner" *ngIf="DesignType=='image'">
+            <div class="image_show">
+              <img [src]="ImageLink" alt="image">
+                </div>
+              <div class="form-group">
+                <button class="btn btn-info btn-block btn_done  mb-2" (click)="UpdateImage()">Change Image</button>
+              </div>
+              <div class="form-group">
+                <label>Link</label>
+                <input type="url" [(ngModel)]="ImageUrl" class="form-control" (blur)="ChangeImageLink($event)">
+              </div>
+            </div>
+            <!-- Image Design -->
+            <!-- Image Design -->
+            <div class="design_mode_inner" *ngIf="DesignType=='header'">
+              <!-- Design type   -->
+              <ul class="header_tabs">
+                <li (click)="ChangeHeaderStyle('color')" [ngClass]="{'active':HeaderType=='color'}">Color</li>
+                <li (click)="ChangeHeaderStyle('image')" [ngClass]="{'active':HeaderType=='image'}">Image</li>
+              </ul>
+              <!-- Design type   -->
+              <!-- design type image -->
+              <div *ngIf="HeaderType=='image'">
+                <h3>Header Style</h3>
+                <p><small>Select an image to use for your header or use a background color.</small></p>
+                <div class="image_show">
+                  <img [src]="ImageLink" alt="image">
+                </div>
+                  <div class="form-group">
+                    <button class="btn btn-info btn-block btn_done  mb-2" (click)="UpdateHeader()">Change Header Image</button>
+                  </div>
+                </div>
+                <!-- design type image -->
+                <!-- design type color -->
+                <div *ngIf="HeaderType=='color'" class="Picker_color text-center">
+                  <span [style.background]="HeaderColor" [cpToggle]="true" [cpDialogDisplay]="'inline'" [cpCancelButton]="false" [(colorPicker)]="HeaderColor" (colorPickerChange)="SetHeaderColor($event)" [cpOutputFormat]="'hex'" [cpWidth]="'300px'"></span>
+                </div>
+                <!-- design type color -->
+                <h3>Logo and Business Name</h3>
+                <div class="form-group">
+                  <select class="input custom-select" [(ngModel)]="LogoOptions" (change)="ChangeLogoOptions($event)">
+                    <option value="BOTH">Show Business Name and Logo</option>
+                    <option value="MERCHANT_NAME">Show Business Name</option>
+                    <option value="LOGO">Show Logo</option>
+                    <option value="NONE">None</option>
+                  </select>
+                </div>
+                <div class="logo_show" *ngIf="LogoOptions=='BOTH' || LogoOptions=='LOGO'">
+                  <img [src]="LogoLink" alt="Logo">
+                </div>
+                  <div class="form-group" *ngIf="LogoOptions=='BOTH' || LogoOptions=='LOGO'">
+                    <button class="btn btn-info btn-block btn_done  mb-2" (click)="UpdateLogo()">Change Business Logo</button>
+                  </div>
+                  <div class="form-group" *ngIf="LogoOptions=='BOTH' || LogoOptions=='MERCHANT_NAME'">
+                    <label>Business Name</label>
+                    <input type="text" class="form-control" [(ngModel)]="BusinessName" (input)="ChangeBusinessName($event)">
+                  </div>
+                  <div class="form-group" *ngIf="LogoOptions=='BOTH' || LogoOptions=='MERCHANT_NAME'">
+                    <label>Business Name Color</label>
+                     <input [value]="BusinessNameColor" [style.background]="BusinessNameColor" [(colorPicker)]="BusinessNameColor" [cpPosition]="'bottom'" [cpOutputFormat]="'hex'" class="form-control" (colorPickerChange)="SetBusinessNameColor($event)" />
+                  </div>
+                </div>
+                <!-- Image Design -->
+                <!-- button design -->
+                <div class="design_mode_inner" *ngIf="DesignType=='button'">
+                  <div class="form-group">
+                    <label>Label</label>
+                    <input type="text" class="form-control" [(ngModel)]="ButtonLabel" (input)="ChangeLabel($event)">
+                  </div>
+                  <div class="form-group">
+                    <label>Link</label>
+                    <input type="url" class="form-control" [(ngModel)]="ButtonLink" (blur)="ChangeLink($event)">
+                  </div>
+                  <div class="form-group">
+                    <label>Background Color</label>
+                    <input [value]="ButtonColor" [style.background]="ButtonColor" [(colorPicker)]="ButtonColor" [cpPosition]="'bottom'" [cpOutputFormat]="'hex'" class="form-control" (colorPickerChange)="SetButtonColor($event)" />
+                  </div>
+                  <div class="form-group">
+                    <label>Label Color</label>
+                    <input [value]="ButtonTextColor" [style.background]="ButtonTextColor" [(colorPicker)]="ButtonTextColor" [cpPosition]="'bottom'" [cpOutputFormat]="'hex'" class="form-control" (colorPickerChange)="SetButtonTextColor($event)" />
+                  </div>
+                  <div class="form-group">
+                    <label>Shape</label>
+                    <select [(ngModel)]="ButtonShape" (change)="ButtonShapeChange($event)" class="custom-select">
+                      <option value="10">Rounded</option>
+                      <option value="0">Rectangle</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Width</label>
+                    <select [(ngModel)]="ButtonWidth" (change)="ButtonWidthChange($event)" class="custom-select">
+                      <option value="auto">Regular</option>
+                      <option value="100">Full</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Size</label>
+                    <select [(ngModel)]="ButtonSize" (change)="ButtonSizeChange($event)" class="custom-select">
+                      <option value="14">Small</option>
+                      <option value="18">Medium</option>
+                      <option value="22">Large</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Font</label>
+                    <select class="form-control" [(ngModel)]="fontfamily" (change)="SetButtonFont($event)" class="custom-select">
+                      <option value="" [selected]="true">Font</option>
+                      <option value="arial">Arial</option>
+                      <option value="caveat-brush">Caveat Brush</option>
+                      <option value="comic-sans-ms">Comic Sans MS</option>
+                      <option value="courier-new">Courier New</option>
+                      <option value="dancing-script">Dancing Script</option>
+                      <option value="georgia">Georgia</option>
+                      <option value="helvetica">Helvetica</option>
+                      <option value="lora">Lora</option>
+                      <option value="lucida">Lucida</option>
+                      <option value="palatino">Palatino</option>
+                      <option value="tahoma">Tahoma</option>
+                      <option value="times-new-roman">Times New Roman</option>
+                      <option value="verdana">Verdana</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Top Spacing</label>
+                    <select class="form-control" [(ngModel)]="marginTop" (change)="SetTopSpacing($event)">
+                      <option value="" [selected]="true">Select Top Spacing</option>
+                      <option value="0">0px</option>
+                      <option value="5">5px</option>
+                      <option value="10">10px</option>
+                      <option value="15">15px</option>
+                      <option value="20">20px</option>
+                      <option value="25">25px</option>
+                      <option value="30">30px</option>
+                      <option value="40">40px</option>
+                      <option value="50">50px</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Bottom Spacing</label>
+                    <select class="form-control" [(ngModel)]="marginBottom" (change)="SetBottomSpacing($event)">
+                      <option value="" [selected]="true">Select Bottom Spacing</option>
+                      <option value="0">0px</option>
+                      <option value="5">5px</option>
+                      <option value="10">10px</option>
+                      <option value="15">15px</option>
+                      <option value="20">20px</option>
+                      <option value="25">25px</option>
+                      <option value="30">30px</option>
+                      <option value="40">40px</option>
+                      <option value="50">50px</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- button design -->
+                <!-- divider -->
+                <div class="design_mode_inner" *ngIf="DesignType=='seprator'">
+                  <div class="form-group">
+                    <label>Color</label>
+                    <input [value]="LineColor" [style.background]="LineColor" [(colorPicker)]="LineColor" [cpPosition]="'bottom'" [cpOutputFormat]="'hex'" class="form-control" (colorPickerChange)="SetLineColor($event)" />
+                  </div>
+                  <div class="form-group">
+                    <label>STROKE STYLE</label>
+                    <select class="custom-select" (change)="SetStrokeStyle($event)" [(ngModel)]="StrokeStyle">
+                      <option value="solid">Solid</option>
+                      <option value="dashed">Dashed</option>
+                      <option value="dotted">Dotted</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>STROKE WIDTH</label>
+                    <select class="custom-select" (change)="SetStrokeWidth($event)" [(ngModel)]="StrokeWidth">
+                      <option value="1">Light</option>
+                      <option value="4">Medium</option>
+                      <option value="8">Heavy</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Size</label>
+                    <select class="custom-select" (change)="SetStrokeSize($event)" [(ngModel)]="StrokeSize">
+                      <option value="50">Small</option>
+                      <option value="75">Medium</option>
+                      <option value="100">Large</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>ALIGNMENT</label>
+                    <select class="custom-select" (change)="SetStrokeAlignment($event)" [(ngModel)]="StrokeAlignment">
+                      <option value="left">Left</option>
+                      <option value="right">Right</option>
+                      <option value="center">Center</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Top Spacing</label>
+                    <select class="form-control" [(ngModel)]="marginTop" (change)="SetTopSpacing($event)">
+                      <option value="" [selected]="true">Select Top Spacing</option>
+                      <option value="0">0px</option>
+                      <option value="5">5px</option>
+                      <option value="10">10px</option>
+                      <option value="15">15px</option>
+                      <option value="20">20px</option>
+                      <option value="25">25px</option>
+                      <option value="30">30px</option>
+                      <option value="40">40px</option>
+                      <option value="50">50px</option>
+                    </select>
+                  </div>
+                  <div class="form-group">
+                    <label>Bottom Spacing</label>
+                    <select class="form-control" [(ngModel)]="marginBottom" (change)="SetBottomSpacing($event)">
+                      <option value="" [selected]="true">Select Bottom Spacing</option>
+                      <option value="0">0px</option>
+                      <option value="5">5px</option>
+                      <option value="10">10px</option>
+                      <option value="15">15px</option>
+                      <option value="20">20px</option>
+                      <option value="25">25px</option>
+                      <option value="30">30px</option>
+                      <option value="40">40px</option>
+                      <option value="50">50px</option>
+                    </select>
+                  </div>
+                </div>
+                <!-- divider -->
+                <!--social_icons-->
+                <div class="design_mode_inner" *ngIf="DesignType=='socialicons'">
+                  <div class="form-group">
+                    <label>Color</label>
+                    <input [value]="IconColor" [style.background]="IconColor" [(colorPicker)]="IconColor" [cpPosition]="'bottom'" [cpOutputFormat]="'hex'" class="form-control" (colorPickerChange)="SetIconColor($event)" />
+                  </div>
+                  <div class="form-group">
+                    <label>Icon Link</label>
+                    <input type="url" [(ngModel)]="IconUrl" class="form-control" (blur)="SetIconUrl($event)">
+                  </div>
+                </div>
+                <!--social_icons-->
+              </div>
+              <button class="btn btn-info btn-block btn_done  mb-2" type="button" (click)="HideDesignMode()" *ngIf="DesignMode"><i class="fa fa-check"></i> Done</button>
+            </div>
+          </div>
+        </div>
+      </div>
+      <!-- Dont remove id from template html -->
